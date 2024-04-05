@@ -11,6 +11,8 @@ public class HandVisualization : MonoBehaviour
     private bool _isInitialized;
     private List<GameObject> _leftHandJoints = new List<GameObject>();
     private List<GameObject> _rightHandJoints = new List<GameObject>();
+    private List<JointPrefab> _leftJointPrefabs = new List<JointPrefab>();
+    private List<JointPrefab> _rightJointPrefabs = new List<JointPrefab>();
 
     private void Update()
     {
@@ -22,34 +24,39 @@ public class HandVisualization : MonoBehaviour
     {
         if (!HandManager.Instance.isEnable) return;
         if (_isInitialized) return;
+        var parent = new GameObject("HandJoints");
         foreach (var joint in HandManager.Instance.leftHandJoints)
         {
             var jointObject = Instantiate(jointPrefab, joint.position, joint.rotation);
-            jointObject.name = joint.name;
+            jointObject.name = joint.id.ToString();
             _leftHandJoints.Add(jointObject);
+            jointObject.transform.SetParent(parent.transform);
+            _leftJointPrefabs.Add(jointObject.GetComponent<JointPrefab>());
         }
         foreach (var joint in HandManager.Instance.rightHandJoints)
         {
             var jointObject = Instantiate(jointPrefab, joint.position, joint.rotation);
-            jointObject.name = joint.name;
+            jointObject.name = joint.id.ToString();
             _rightHandJoints.Add(jointObject);
+            jointObject.transform.SetParent(parent.transform);
+            _rightJointPrefabs.Add(jointObject.GetComponent<JointPrefab>());
         }
         _isInitialized = true;
     }
 
     private void UpdateJointTransform()
     {
-        foreach (var joint in _leftHandJoints)
+        for(var i = 0; i < _leftHandJoints.Count; i++)
         {
-            joint.transform.position = HandManager.Instance.leftHandJoints.Find(x => x.name == joint.name).position;
-            joint.transform.rotation = HandManager.Instance.leftHandJoints.Find(x => x.name == joint.name).rotation;
-            joint.SetActive(HandManager.Instance.leftHandJoints.Find(x => x.name == joint.name).isTracked);
+            _leftHandJoints[i].transform.position = HandManager.Instance.leftHandJoints.Find(x => x.id.ToString() == _leftHandJoints[i].name).position;
+            _leftHandJoints[i].transform.rotation = HandManager.Instance.leftHandJoints.Find(x => x.id.ToString() == _leftHandJoints[i].name).rotation;
+            _leftJointPrefabs[i].ChangeMaterial(HandManager.Instance.leftHandJoints[i].isTracked);
         }
-        foreach (var joint in _rightHandJoints)
+        for(var i = 0; i < _rightHandJoints.Count; i++)
         {
-            joint.transform.position = HandManager.Instance.rightHandJoints.Find(x => x.name == joint.name).position;
-            joint.transform.rotation = HandManager.Instance.rightHandJoints.Find(x => x.name == joint.name).rotation;
-            joint.SetActive(HandManager.Instance.rightHandJoints.Find(x => x.name == joint.name).isTracked);
+            _rightHandJoints[i].transform.position = HandManager.Instance.rightHandJoints.Find(x => x.id.ToString() == _rightHandJoints[i].name).position;
+            _rightHandJoints[i].transform.rotation = HandManager.Instance.rightHandJoints.Find(x => x.id.ToString() == _rightHandJoints[i].name).rotation;
+            _rightJointPrefabs[i].ChangeMaterial(HandManager.Instance.rightHandJoints[i].isTracked);
         }
     }
     
