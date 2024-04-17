@@ -1,5 +1,9 @@
 A vision pro project for testing vision pro abilities.
 
+![hand-tracking](./extra/hand-tracking.gif)
+
+
+
 TOOD
 - [x] Hand Tracking visualisation
 - [x] Figner curl detect
